@@ -11,21 +11,21 @@ from parsl.config import Config
 from parsl.data_provider.files import File
 from concurrent.futures import Future
 
-import mpi_method_server_methods
+import mpi_method_server_methods2
 
 class MpiMethodServer:
 
     """ If load_default = True, we load the default methods list from a separate methods file
         else the user must pass a list of methods via methods_list kwarg.
     """
-    def __init__(self, input_queue, output_queue, methods_list=None, load_default=True):
+    def __init__(self, input_queue, value_server, methods_list=None, load_default=True):
         self.input_queue   = input_queue
-        self.output_queue  = output_queue
+        self.value_server  = value_server
         self.task_list     = []
         self.methods_table = {} # Dict maps {func_name : func}
 
         if load_default is True:
-            for method in mpi_method_server_methods.methods_list:
+            for method in mpi_method_server_methods2.methods_list:
                 self.add_method(method)
         else:
             for method in methods_list:
@@ -69,7 +69,7 @@ class MpiMethodServer:
         outdir = 'outputs'
         self.make_outdir(outdir)
         x = self.launch_method('simulate', i, delay=1 + int(i) % 2, outputs=[File(f'{outdir}/simulate_{i}.out')])
-        y = self.launch_method('output_result', self.output_queue, i, inputs=[x.outputs[0]])
+        y = self.launch_method('output_result', self.value_server, i, inputs=[x.outputs[0]])
         return y
 
 

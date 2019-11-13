@@ -33,8 +33,7 @@ class RedisQueue(object):
             if not self.redis_client:
                 self.redis_client = redis.StrictRedis(host=self.hostname, port=self.port, decode_responses=True)
         except redis.exceptions.ConnectionError:
-            print("ConnectionError while trying to connect to Redis@{}:{}".format(self.hostname,
-                                                                                  self.port))
+            print("ConnectionError while trying to connect to Redis@{}:{}".format(self.hostname, self.port))
 
             raise
 

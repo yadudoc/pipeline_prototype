@@ -15,7 +15,8 @@ from concurrent.futures import Future
 
 from redis_q import RedisQueue
 
-import mpi_method_server
+import mpi_method_server2
+import value_server
 
 config_mac = Config(
     executors=[
@@ -77,14 +78,15 @@ To access a result, remove it from the outout queue:
 
     input_queue = RedisQueue(args.redishost, port=int(args.redisport), prefix='input')
     input_queue.connect()
-    output_queue = RedisQueue(args.redishost, port=int(args.redisport), prefix='output')
-    output_queue.connect()
-    value_server = RedisQueue(args.args.redishost, port=int(args.redisport), prefix='output')
 
-    mms = mpi_method_server.MpiMethodServer(input_queue, output_queue)
+    value_server = value_server.ValueServer(args.redishost, port=int(args.redisport), database=1)
+
+    mms = mpi_method_server2.MpiMethodServer(input_queue, value_server)
     mms.main_loop()
 
-    # Next up, we likely want to add the ability to create a value server and connect it to a method server, e.g.:
-    #vs = value_server.ValueServer(output_queue)
+    keys = value_server.all_keys()
+    print('All keys', keys)
+
+    value_server.flush()
 
     print("All done")
